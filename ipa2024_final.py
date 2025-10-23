@@ -145,14 +145,28 @@ while True:
                 raise Exception(
                     "Incorrect reply from Webex Teams API. Status code: {}, {}".format(r.status_code, r.content)
                 )
-        # elif command == "status":
-        #     <!!!REPLACEME with code for status command!!!>
-        #  elif command == "gigabit_status":
+        elif command == "status":
+            responseMessage = restconf_final.status()
+            print(responseMessage)
+            msg_body = {
+                "roomId": roomIdToGetMessages,
+                "text": responseMessage
+            }
+            r = requests.post(
+                "https://webexapis.com/v1/messages",
+                data=json.dumps(msg_body),
+                headers=getHTTPHeader
+            )
+            if not r.status_code == 200:
+                raise Exception(
+                    "Incorrect reply from Webex Teams API. Status code: {}, {}".format(r.status_code, r.content)
+                )
+        # elif command == "gigabit_status":
         #     <!!!REPLACEME with code for gigabit_status command!!!>
         # elif command == "showrun":
         #     <!!!REPLACEME with code for showrun command!!!>
-        # else:
-        #     responseMessage = "Error: No command or unknown command"
+        else:
+            responseMessage = "Error: No command or unknown command"
         
 # 6. Complete the code to post the message to the Webex Teams room.
 

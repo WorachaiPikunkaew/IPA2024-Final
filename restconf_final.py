@@ -111,27 +111,28 @@ def disable():
         return "Cannot disable: Interface loopback 66070177"
 
 
-# def status():
-#     api_url_status = "<!!!REPLACEME with URL of RESTCONF Operational API!!!>"
+def status():
+    api_url_status = "https://10.0.15.61/restconf/data/ietf-interfaces:interfaces-state/interface=Loopback66070177"
 
-#     resp = requests.<!!!REPLACEME with the proper HTTP Method!!!>(
-#         <!!!REPLACEME with URL!!!>, 
-#         auth=basicauth, 
-#         headers=<!!!REPLACEME with HTTP Header!!!>, 
-#         verify=False
-#         )
+    resp = requests.get(
+        api_url_status, 
+        auth=basicauth, 
+        headers=headers, 
+        verify=False
+        )
 
-#     if(resp.status_code >= 200 and resp.status_code <= 299):
-#         print("STATUS OK: {}".format(resp.status_code))
-#         response_json = resp.json()
-#         admin_status = <!!!REPLACEME!!!>
-#         oper_status = <!!!REPLACEME!!!>
-#         if admin_status == 'up' and oper_status == 'up':
-#             return "<!!!REPLACEME with proper message!!!>"
-#         elif admin_status == 'down' and oper_status == 'down':
-#             return "<!!!REPLACEME with proper message!!!>"
-#     elif(resp.status_code == 404):
-#         print("STATUS NOT FOUND: {}".format(resp.status_code))
-#         return "<!!!REPLACEME with proper message!!!>"
-#     else:
-#         print('Error. Status Code: {}'.format(resp.status_code))
+    if(resp.status_code >= 200 and resp.status_code <= 299):
+        print("STATUS OK: {}".format(resp.status_code))
+        response_json = resp.json()
+        admin_status = response_json['ietf-interfaces:interface']['admin-status']
+        oper_status = response_json['ietf-interfaces:interface']['oper-status']
+        if admin_status == 'up' and oper_status == 'up':
+            return "Interface loopback 66070177 is enabled"
+        elif admin_status == 'down' and oper_status == 'down':
+            return "Interface loopback 66070177 is disabled"
+    elif(resp.status_code == 404):
+        print("STATUS NOT FOUND: {}".format(resp.status_code))
+        return "No Interface loopback 66070177"
+    else:
+        print('Error. Status Code: {}'.format(resp.status_code))
+        return "Cannot get status of Interface loopback 66070177"
