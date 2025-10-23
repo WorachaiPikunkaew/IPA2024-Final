@@ -113,10 +113,38 @@ while True:
                 raise Exception(
                     "Incorrect reply from Webex Teams API. Status code: {}, {}".format(r.status_code, r.content)
                 )
-        # elif command == "enable":
-        #     <!!!REPLACEME with code for enable command!!!>
-        # elif command == "disable":
-        #     <!!!REPLACEME with code for disable command!!!>
+        elif command == "enable":
+            responseMessage = restconf_final.enable()
+            print(responseMessage)
+            msg_body = {
+                "roomId": roomIdToGetMessages,
+                "text": responseMessage
+            }
+            r = requests.post(
+                "https://webexapis.com/v1/messages",
+                data=json.dumps(msg_body),
+                headers=getHTTPHeader
+            )
+            if not r.status_code == 200:
+                raise Exception(
+                    "Incorrect reply from Webex Teams API. Status code: {}, {}".format(r.status_code, r.content)
+                )
+        elif command == "disable":
+            responseMessage = restconf_final.disable()
+            print(responseMessage)
+            msg_body = {
+                "roomId": roomIdToGetMessages,
+                "text": responseMessage
+            }
+            r = requests.post(
+                "https://webexapis.com/v1/messages",
+                data=json.dumps(msg_body),
+                headers=getHTTPHeader
+            )
+            if not r.status_code == 200:
+                raise Exception(
+                    "Incorrect reply from Webex Teams API. Status code: {}, {}".format(r.status_code, r.content)
+                )
         # elif command == "status":
         #     <!!!REPLACEME with code for status command!!!>
         #  elif command == "gigabit_status":
