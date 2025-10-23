@@ -1,0 +1,16 @@
+---
+- name: AUTOMATIC BACKUP OF RUNNING-CONFIG
+  hosts: lab
+  gather_facts: no
+ 
+  tasks:
+   - name: DISPLAYING THE RUNNING-CONFIG
+     ios_command:
+       commands:
+         - show running-config  
+     register: config
+ 
+   - name: SAVE OUTPUT TO A FILE
+     copy:
+       content: "{{ config.stdout[0] }}"
+       dest: "show_run_66070177_CSR1KV.txt"
