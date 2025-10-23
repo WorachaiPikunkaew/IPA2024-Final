@@ -6,7 +6,7 @@ username = "admin"
 password = "cisco"
 
 device_params = {
-    "device_type": "<!!!REPLACEME with device type for netmiko!!!>",
+    "device_type": "cisco_xe",
     "ip": device_ip,
     "username": username,
     "password": password,
@@ -14,21 +14,27 @@ device_params = {
 
 
 def gigabit_status():
-    ans = ""
+    ans = "default answer"
     with ConnectHandler(**device_params) as ssh:
         up = 0
         down = 0
         admin_down = 0
-        result = ssh.send_command("<!!!REPLACEME with proper command!!!>", use_textfsm=True)
+        result = ssh.send_command("show ip int", use_textfsm=True)
+        print("cmd_result\n",result, type(result))
         for status in result:
-            if <!!!Write code here!!!>:
-                <!!!Write code here!!!>
-                if <!!!Write code here!!!> == "up":
+            print("status:", status)
+            if status['interface'].startswith('GigabitEthernet'):
+                ans += status['interface'] +" "+ status['link_status']
+                if status['link_status'] == "up":
                     up += 1
-                elif <!!!Write code here!!!> == "down":
+                elif status['link_status'] == "down":
                     down += 1
-                elif <!!!Write code here!!!> == "administratively down":
+                elif status['link_status'] == "administratively down":
                     admin_down += 1
-        ans = <!!!Write code here!!!>
+            else:
+                continue
+            ans += ", "
+        ans = ans[:-2]
+        ans += " -> {} up, {} down, {} administratively down".format(up, down, admin_down)
         pprint(ans)
         return ans
