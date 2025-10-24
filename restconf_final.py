@@ -2,8 +2,14 @@ import json
 import requests
 requests.packages.urllib3.disable_warnings()
 
+# IP address context
+def set_ip(ip_address):
+    global api_url
+    api_url= "https://"+ip_address+"/restconf/data/ietf-interfaces:interfaces"
+
+
 # Router IP Address is 10.0.15.181-184
-api_url = "https://10.0.15.61/restconf/data/ietf-interfaces:interfaces"
+# api_url = "https://10.0.15.61/restconf/data/ietf-interfaces:interfaces"
 
 # the RESTCONF HTTP headers, including the Accept and Content-Type
 # Two YANG data formats (JSON and XML) work with RESTCONF 
