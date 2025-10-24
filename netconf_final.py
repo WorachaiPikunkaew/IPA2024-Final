@@ -1,28 +1,46 @@
 from ncclient import manager
 import xmltodict
 
-m = manager.connect(
-    host="10.0.15.61",
-    port=830,
-    username="admin",
-    password="cisco",
-    hostkey_verify=False
+# IP address context
+def netconf_connect(ip: str):
+    return manager.connect(
+        host=ip,
+        port=830,
+        username="admin",
+        password="cisco",
+        hostkey_verify=False
     )
+def set_ip(ip):
+    global m
+    m = netconf_connect(ip)
+
+# m = manager.connect(
+#     host=_context["ip"],
+#     port=830,
+#     username="admin",
+#     password="cisco",
+#     hostkey_verify=False
+#     )
+
 
 def create():
     netconf_config = """
-        <interface xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-            <name>Loopback66070177</name>
-            <description>NETCONF</description>
-            <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:softwareLoopback</type>
-            <enabled>true</enabled>
-            <ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
-                <address>
-                    <ip>172.1.77.1</ip>
-                    <netmask>255.255.255.0</netmask>
-                </address>
-            </ipv4>
-        </interface>
+    <config>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+            <interface>
+                <name>Loopback66070177</name>
+                <description>NETCONF</description>
+                <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:softwareLoopback</type>
+                <enabled>true</enabled>
+                <ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
+                    <address>
+                        <ip>172.1.77.1</ip>
+                        <netmask>255.255.255.0</netmask>
+                    </address>
+                </ipv4>
+            </interface>
+        </interfaces>
+    </config>
     """
 
     try:
@@ -33,13 +51,18 @@ def create():
             return "Interface loopback 66070177 is created successfully"
     except:
         print("Cannot create the interface loopback 66070177")
+        return "Cannot create: Interface loopback 66070177"
 
 
 def delete():
     netconf_config = """
-        <interface xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces" operation="delete">
-            <name>Loopback66070177</name>
-        </interface>
+    <config>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+            <interface operation="delete">
+                <name>Loopback66070177</name>
+            </interface>
+        </interfaces>
+    </config>
     """
 
     try:
@@ -50,14 +73,19 @@ def delete():
             return "Interface loopback 66070177 is deleted successfully"
     except:
         print("Cannot delete: Interface loopback 66070177")
+        return "Cannot delete: Interface loopback 66070177"
 
 
 def enable():
     netconf_config = """
-        <interface xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-            <name>Loopback66070177</name>
-            <enabled>true</enabled>
-        </interface>
+    <config>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+            <interface>
+                <name>Loopback66070177</name>
+                <enabled>true</enabled>
+            </interface>
+        </interfaces>
+    </config>
     """
 
     try:
@@ -68,14 +96,19 @@ def enable():
             return "Interface loopback 66070177 is enabled successfully"
     except:
         print("Cannot enable: Interface loopback 66070177")
+        return "Cannot enable: Interface loopback 66070177"
 
 
 def disable():
     netconf_config = """
-        <interface xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-            <name>Loopback66070177</name>
-            <enabled>false</enabled>
-        </interface>
+    <config>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+            <interface>
+                <name>Loopback66070177</name>
+                <enabled>false</enabled>
+            </interface>
+        </interfaces>
+    </config>
     """
 
     try:
@@ -86,6 +119,7 @@ def disable():
             return "Interface loopback 66070177 is disabled successfully"
     except:
         print("Cannot disable: Interface loopback 66070177")
+        return "Cannot disable: Interface loopback 66070177"
 
 def netconf_edit_config(netconf_config):
     return  m.edit_config(target="running", config=netconf_config)
@@ -104,7 +138,7 @@ def status():
 
     try:
         # Use Netconf operational operation to get interfaces-state information
-        netconf_reply = m.get_config(filter=netconf_filter, source="running")
+        netconf_reply = m.get(filter=netconf_filter, source="running")
         print(netconf_reply)
         netconf_reply_dict = xmltodict.parse(netconf_reply.xml)
 
@@ -121,3 +155,4 @@ def status():
             return "No Interface loopback 66070177"
     except:
        print("Cannot get status of Interface loopback 66070177")
+       return "Cannot get status of Interface loopback 66070177"
