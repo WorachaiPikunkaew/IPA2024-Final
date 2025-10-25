@@ -4,8 +4,9 @@ requests.packages.urllib3.disable_warnings()
 
 # IP address context
 def set_ip(ip_address):
-    global api_url
+    global api_url, api_url_status
     api_url= "https://"+ip_address+"/restconf/data/ietf-interfaces:interfaces"
+    api_url_status= "https://"+ip_address+"/restconf/data/ietf-interfaces:interfaces-state/interface=Loopback66070177"
 
 
 # Router IP Address is 10.0.15.181-184
@@ -47,7 +48,7 @@ def create():
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return "Interface loopback66070177 is created successfully"
+        return "Interface loopback66070177 is created successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
         return "Cannot create: Interface loopback 66070177"
@@ -63,7 +64,7 @@ def delete():
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return "Interface loopback 66070177 is deleted successfully"
+        return "Interface loopback 66070177 is deleted successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
         return "Cannot delete: Interface loopback 66070177"
@@ -87,7 +88,7 @@ def enable():
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return "Interface loopback 66070177 is enabled successfully"
+        return "Interface loopback 66070177 is enabled successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
         return "Cannot enable: Interface loopback 66070177"
@@ -111,14 +112,13 @@ def disable():
 
     if(resp.status_code >= 200 and resp.status_code <= 299):
         print("STATUS OK: {}".format(resp.status_code))
-        return "interface loopback 66070177 is disabled successfully"
+        return "interface loopback 66070177 is disabled successfully using Restconf"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
         return "Cannot disable: Interface loopback 66070177"
 
 
 def status():
-    api_url_status = "https://10.0.15.61/restconf/data/ietf-interfaces:interfaces-state/interface=Loopback66070177"
 
     resp = requests.get(
         api_url_status, 
@@ -133,12 +133,12 @@ def status():
         admin_status = response_json['ietf-interfaces:interface']['admin-status']
         oper_status = response_json['ietf-interfaces:interface']['oper-status']
         if admin_status == 'up' and oper_status == 'up':
-            return "Interface loopback 66070177 is enabled"
+            return "Interface loopback 66070177 is enabled (checked by Restconf)"
         elif admin_status == 'down' and oper_status == 'down':
-            return "Interface loopback 66070177 is disabled"
+            return "Interface loopback 66070177 is disabled (checked by Restconf)"
     elif(resp.status_code == 404):
         print("STATUS NOT FOUND: {}".format(resp.status_code))
-        return "No Interface loopback 66070177"
+        return "No Interface loopback 66070177 (checked by Restconf)"
     else:
         print('Error. Status Code: {}'.format(resp.status_code))
-        return "Cannot get status of Interface loopback 66070177"
+        return "Cannot get status of Interface loopback 66070177 (checked by Restconf)"

@@ -1,7 +1,9 @@
 from netmiko import ConnectHandler
 from pprint import pprint
 
-device_ip = "10.0.15.61"
+def set_ip(ip_address):
+    global device_ip
+    device_ip = ip_address
 username = "admin"
 password = "cisco"
 
@@ -35,6 +37,6 @@ def gigabit_status():
                 continue
             ans += ", "
         ans = ans[:-2]
-        ans += " -> {} up, {} down, {} administratively down".format(up, down, admin_down)
+        ans += " -> {} up, {} down, {} administratively down (Checked by netmiko)".format(up, down, admin_down)
         pprint(ans)
         return ans
