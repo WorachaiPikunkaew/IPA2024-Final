@@ -27,7 +27,7 @@ def create():
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-            <interface>
+            <interface operation="create">
                 <name>Loopback66070177</name>
                 <description>NETCONF</description>
                 <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:softwareLoopback</type>
@@ -77,10 +77,19 @@ def delete():
 
 
 def enable():
+    netconf_get_config = """
+    <filter>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+            <interface>
+                <name>Loopback66070177</name>
+            </interface>
+        </interfaces>
+    </filter>
+    """
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-            <interface>
+            <interface operation="merge">
                 <name>Loopback66070177</name>
                 <enabled>true</enabled>
             </interface>
@@ -89,10 +98,14 @@ def enable():
     """
 
     try:
+        isenabled = m.get(filter=netconf_get_config)
+        if '<enabled>true</enabled>' in isenabled.xml:
+            raise Exception("Interface loopback 66070177 is already enabled")
         netconf_reply = netconf_edit_config(netconf_config)
         xml_data = netconf_reply.xml
         print(xml_data)
         if '<ok/>' in xml_data:
+            print("xml_data:", xml_data)
             return "Interface loopback 66070177 is enabled successfully using Netconf"
     except:
         print("Cannot enable: Interface loopback 66070177")
@@ -100,6 +113,15 @@ def enable():
 
 
 def disable():
+    netconf_get_config = """
+    <filter>
+        <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+            <interface>
+                <name>Loopback66070177</name>
+            </interface>
+        </interfaces>
+    </filter>
+    """
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
@@ -112,6 +134,9 @@ def disable():
     """
 
     try:
+        isenabled = m.get(filter=netconf_get_config)
+        if '<enabled>false</enabled>' in isenabled.xml:
+            raise Exception("Interface loopback 66070177 is already disabled")
         netconf_reply = netconf_edit_config(netconf_config)
         xml_data = netconf_reply.xml
         print(xml_data)
@@ -138,7 +163,7 @@ def status():
 
     try:
         # Use Netconf operational operation to get interfaces-state information
-        netconf_reply = m.get(filter=netconf_filter, source="running")
+        netconf_reply = m.get(filter=netconf_filter)
         print(netconf_reply)
         netconf_reply_dict = xmltodict.parse(netconf_reply.xml)
 
@@ -153,6 +178,6 @@ def status():
                 return "Interface loopback 66070177 is disabled (checked by Netconf)"
         else: # no operation-state data
             return "No Interface loopback 66070177 (checked by Netconf)"
-    except:
-       print("Cannot get status of Interface loopback 66070177")
+    except Exception as e:
+       print("Cannot get status of Interface loopback 66070177 ERROR:", e)
        return "Cannot get status of Interface loopback 66070177 (checked by Netconf)"

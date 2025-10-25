@@ -1,6 +1,6 @@
 ---
 - name: AUTOMATIC BACKUP OF RUNNING-CONFIG
-  hosts: lab
+  hosts: labs
   gather_facts: no
  
   tasks:

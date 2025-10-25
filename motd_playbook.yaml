@@ -1,0 +1,10 @@
+---
+- name: SET MOTD MESSAGE
+  hosts: labs
+  gather_facts: no
+
+  tasks:
+    - name: CONFIGURE MOTD
+      ios_config:
+        lines:
+          - banner motd "{{ motd_message }}"
