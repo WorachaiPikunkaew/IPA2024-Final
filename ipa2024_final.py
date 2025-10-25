@@ -180,19 +180,4 @@ while True:
 
         # other commands only send text, or no attached file.
         elif command == "showrun" and commandResponse != 'ok':
-            postData = {"roomId": ROOM_ID, "text": commandResponse}
-            postData = json.dumps(postData)
-
-            # the Webex Teams HTTP headers, including the Authoriztion and Content-Type
-            HTTPHeaders = {"Authorization": "Bearer "+ACCESS_TOKEN, "Content-Type": "application/json"}   
-
-            # Post the call to the Webex Teams message API.
-            r = requests.post(
-                "https://webexapis.com/v1/messages",
-                data=postData,
-                headers=HTTPHeaders,
-            )
-            if not r.status_code == 200:
-                raise Exception(
-                    "Incorrect reply from Webex Teams API. Status code: {}: {}".format(r.status_code, r.content)
-                )
+            msg_send(commandResponse)
