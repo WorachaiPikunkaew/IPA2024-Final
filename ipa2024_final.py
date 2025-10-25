@@ -83,6 +83,9 @@ while True:
 
     # store the array of messages
     messages = json_data["items"]
+
+    if "text" not in messages[0]:
+        continue
     
     # store the text of the first message in the array
     message = messages[0]["text"]
@@ -91,8 +94,10 @@ while True:
     # check if the text of the message starts with the magic character "/" followed by your studentID and a space and followed by a command name
     #  e.g.  "/66070123 create"
     ipv4_address = ""
-    if message.startswith("/66070177 "):
-        command_list = message.split(" ")[1:] # ignore the first part which is /studentID
+    if message.startswith("/66070177"):
+        command_list = message.split(" ") # split the message into a list of words
+        if len(command_list) < 2: command_list.append("") # ensure there are at least 2 elements in the command_list
+        command_list = command_list[1:] # remove the /studentID part
         if command_list[0] in ["netconf", "restconf"]: # check for user selected method
             conf_method = command_list[0]
             print("Selected method: {}".format(conf_method))
@@ -110,15 +115,19 @@ while True:
                 continue
             restconf_final.set_ip(ipv4_address)
             netconf_final.set_ip(ipv4_address)
+            netmiko_final.set_ip(ipv4_address)
             print("Using method: {}".format(conf_method))
             print("Using IPv4 address: {}".format(ipv4_address))
+            command_list = command_list[1:] # remove the IP address part
 
-        command = command_list[-1] # last argument should be the command
+
+        command = command_list[0] # last argument should be the command
         # only process further if a method has been selected
         
 
 
     # 5. Complete the logic for each command
+        motd_message = " ".join(command_list[1:]) if len(command_list) > 1 else ""
         commandResponse = ""
         if command == "create":
             commandResponse = restconf_final.create() if conf_method == "restconf" else netconf_final.create()
@@ -133,7 +142,11 @@ while True:
         elif command == "gigabit_status":
             commandResponse = netmiko_final.gigabit_status()
         elif command == "showrun":
-            commandResponse = ansible_final.showrun()
+            commandResponse = ansible_final.showrun(ipv4_address)
+        elif command == "motd" and motd_message:
+            commandResponse = ansible_final.motd(ipv4_address, motd_message)
+        elif command == "motd" and not motd_message:
+            commandResponse = netmiko_final.get_motd()
         else:
             commandResponse = "Error: No command or unknown command"
         print(command, "response with", commandResponse)
